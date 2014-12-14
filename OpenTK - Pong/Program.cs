@@ -33,7 +33,7 @@ namespace OpenTK___Pong {
         private float m_facing = 0.0f;
         private float m_pitch = 0.0f;
         private Vector3 m_cameraLocation;
-        private Vector3 m_upVector = Vector3.UnitY;
+        private Vector3 m_upVector = Vector3.UnitY;        
 
         public Pong()
             : base(800, 600) {
@@ -69,7 +69,6 @@ namespace OpenTK___Pong {
         }
 
         private void RenderObjects() {
-            //this.DrawCube(0,0,0);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
@@ -79,11 +78,22 @@ namespace OpenTK___Pong {
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e) {
-            //var lookatPoint = new Vector3((float)Math.Cos(this.m_facing), this.m_pitch, (float)Math.Sin(this.m_facing));
-            //this.m_cameraMatrix = Matrix4.LookAt(this.m_cameraLocation, this.m_cameraLocation + lookatPoint, this.m_upVector);
-            //var lookatPoint = new Vector3((float)Math.Cos(this.m_facing), this.m_pitch, (float)Math.Sin(this.m_facing));
-            //this.m_cameraMatrix = Matrix4.LookAt(this.m_cameraLocation, this.m_cameraLocation + lookatPoint, this.m_upVector);
+            this.UpdateKeyboardEvents();
 
+        }
+
+        private void UpdateKeyboardEvents() {
+            if ( Keyboard[Key.W] ) {
+                this.m_leftPaddle.UpdatePosition(1);
+            } else if ( Keyboard[Key.S] ) {
+                this.m_leftPaddle.UpdatePosition(-1);
+            }
+
+            if ( Keyboard[Key.Up] ) {
+                this.m_rightPaddle.UpdatePosition(1);
+            } else if ( Keyboard[Key.Down] ) {
+                this.m_rightPaddle.UpdatePosition(-1);
+            }
         }
 
         protected override void OnLoad(EventArgs e) {
@@ -109,6 +119,8 @@ namespace OpenTK___Pong {
         private double m_width;
         private double m_height;
 
+        private double velocity = 10;
+
         public Paddle(Vector2d position, float width, float height) {
             this.m_position = position;
             this.m_width = width;
@@ -132,6 +144,14 @@ namespace OpenTK___Pong {
 
         public void Scale(float width, float height) {
             //GL.Scale();
+        }
+
+        public void UpdatePosition(int velocity){
+            if ( velocity < 0 ) {
+                this.m_position.Y = Math.Max(0 + this.m_height, this.m_position.Y + velocity * this.velocity);
+            } else {
+                this.m_position.Y = Math.Min(800 - this.m_height, this.m_position.Y + velocity * this.velocity);
+            }
         }
     }
 
