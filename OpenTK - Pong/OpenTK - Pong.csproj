@@ -7,7 +7,7 @@
     <ProjectGuid>{747996C7-9C07-471C-88F4-3289F55DA8E8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OpenTK___Pong</RootNamespace>
+    <RootNamespace>OpenTKPong</RootNamespace>
     <AssemblyName>OpenTK - Pong</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -54,7 +54,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Collisions\Collidable.cs" />
+    <Compile Include="Collisions\CollidableAABB.cs" />
+    <Compile Include="Collisions\ICollidable.cs" />
+    <Compile Include="Collisions\Projection.cs" />
+    <Compile Include="Entities\Ball.cs" />
+    <Compile Include="Entities\Paddle.cs" />
+    <Compile Include="Entities\Wall.cs" />
+    <Compile Include="Pong.cs" />
+    <Compile Include="PongGame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

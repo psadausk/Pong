@@ -1,0 +1,12 @@
+F:\OpenTK Projects\Pong\OpenTK - Pong\bin\Debug\OpenTK - Pong.exe.config
+F:\OpenTK Projects\Pong\OpenTK - Pong\bin\Debug\OpenTK - Pong.exe
+F:\OpenTK Projects\Pong\OpenTK - Pong\bin\Debug\OpenTK - Pong.pdb
+F:\OpenTK Projects\Pong\OpenTK - Pong\bin\Debug\OpenTK.Compatibility.dll
+F:\OpenTK Projects\Pong\OpenTK - Pong\bin\Debug\OpenTK.dll
+F:\OpenTK Projects\Pong\OpenTK - Pong\bin\Debug\OpenTK.GLControl.dll
+F:\OpenTK Projects\Pong\OpenTK - Pong\bin\Debug\OpenTK.xml
+F:\OpenTK Projects\Pong\OpenTK - Pong\bin\Debug\OpenTK.Compatibility.xml
+F:\OpenTK Projects\Pong\OpenTK - Pong\bin\Debug\OpenTK.GLControl.xml
+F:\OpenTK Projects\Pong\OpenTK - Pong\obj\Debug\OpenTK - Pong.csprojResolveAssemblyReference.cache
+F:\OpenTK Projects\Pong\OpenTK - Pong\obj\Debug\OpenTK - Pong.exe
+F:\OpenTK Projects\Pong\OpenTK - Pong\obj\Debug\OpenTK - Pong.pdb
