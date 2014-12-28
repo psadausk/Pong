@@ -11,6 +11,18 @@ using OpenTKPong.Entities;
 using System.Drawing;
 
 namespace OpenTKPong {
+
+    //
+    // Layout of the game
+    //  Origin is the top left
+    //   -- 
+    //  |  |
+    //  |  |
+    //  |  |
+    //  |  |
+    //   --
+    //(0,0) point
+
     public class Pong : GameWindow {
         private Matrix4 m_cameraMatrix;
         private int m_paddleWidth = 25;
@@ -28,20 +40,7 @@ namespace OpenTKPong {
         public Pong()
             : base(800, 600) {
             this.m_cameraMatrix = Matrix4.Identity;
-            this.m_leftPaddle = new Paddle(
-                new Vector2(this.m_paddleOffset,
-                    this.Height / 2 + this.m_paddleHeight / 2),
-                    this.m_paddleWidth, this.m_paddleHeight);
-            this.m_rightPaddle = new Paddle(
-                new Vector2(
-                    this.Width - this.m_paddleWidth,
-                    this.Height / 2 + this.m_paddleHeight / 2), this.m_paddleWidth, this.m_paddleHeight);
-
-            this.m_topWall = new Wall(new Vector2(0, this.Height + 50), this.Width, 5 + 50);
-            this.m_bottomWall = new Wall(new Vector2(0, 5), this.Width, 5);
-
-            this.m_ball = new Ball(new Vector2d(this.Width / 2, this.Height / 2), 10);
-
+            this.Reset();
             Glu.gluOrtho2D(0.0f, (double)this.Width, 0.0, (double)this.Height);
         }
 
@@ -58,8 +57,7 @@ namespace OpenTKPong {
             GL.LoadMatrix(ref this.m_cameraMatrix);
             this.RenderObjects();
             this.SwapBuffers();
-        }
-
+        }        
         private void RenderObjects() {
 
             GL.MatrixMode(MatrixMode.Modelview);
@@ -72,17 +70,32 @@ namespace OpenTKPong {
         }
 
         private void DetectCollisions() {
+            //Left Paddle
             if ( this.m_leftPaddle.Collided(this.m_topWall) ) {
                 this.m_leftPaddle.Origin = new Vector2(this.m_leftPaddle.Origin.X, this.m_topWall.Origin.Y - this.m_topWall.Height);
             } else if ( this.m_leftPaddle.Collided(this.m_bottomWall) ) {
                 this.m_leftPaddle.Origin = new Vector2(this.m_leftPaddle.Origin.X, this.m_bottomWall.Origin.Y + this.m_paddleHeight);
             }
-
+            
+            //Right Paddle
             if ( this.m_rightPaddle.Collided(this.m_topWall) ) {
                 this.m_rightPaddle.Origin = new Vector2(this.m_rightPaddle.Origin.X, this.m_topWall.Origin.Y - this.m_topWall.Height);
             } else if ( this.m_rightPaddle.Collided(this.m_bottomWall) ) {
                 this.m_rightPaddle.Origin = new Vector2(this.m_rightPaddle.Origin.X, this.m_bottomWall.Origin.Y + this.m_paddleHeight);
             }
+
+            //Ball
+            if (this.m_ball.Collided(this.m_topWall)) {
+                this.m_ball.UpdatePosition(new Vector2(1, -1.1f));
+            }
+            else if (this.m_ball.Collided(this.m_bottomWall)) {
+                this.m_ball.UpdatePosition(new Vector2(1, -1.1f));
+            } else if (this.m_ball.Collided(this.m_leftPaddle)) {
+                this.m_ball.UpdatePosition(new Vector2(-1.1f, 1));
+            } else if (this.m_ball.Collided(this.m_rightPaddle)) {
+                this.m_ball.UpdatePosition(new Vector2(-1.1f, 1));
+            }
+
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e) {
@@ -103,9 +116,15 @@ namespace OpenTKPong {
             } else if ( Keyboard[Key.Down] ) {
                 this.m_rightPaddle.UpdatePosition(-1);
             }
+
+            if (Keyboard[Key.R]) {
+                this.Reset();
+            }
         }
 
         private void UpdateBall() {
+            //Maintain velocity
+            this.m_ball.UpdatePosition(new Vector2(1, 1) );
         }
 
         protected override void OnLoad(EventArgs e) {
@@ -116,6 +135,22 @@ namespace OpenTKPong {
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
             Glu.gluOrtho2D(0.0, (double)Width, 0.0, (double)Height);
+        }
+
+        private void Reset() {
+            this.m_leftPaddle = new Paddle(
+                new Vector2(this.m_paddleOffset,
+                    this.Height / 2 + this.m_paddleHeight / 2),
+                    this.m_paddleWidth, this.m_paddleHeight);
+            this.m_rightPaddle = new Paddle(
+                new Vector2(
+                    this.Width - this.m_paddleWidth,
+                    this.Height / 2 + this.m_paddleHeight / 2), this.m_paddleWidth, this.m_paddleHeight);
+
+            this.m_topWall = new Wall(new Vector2(0, this.Height + 50), this.Width, 5 + 50);
+            this.m_bottomWall = new Wall(new Vector2(0, 5), this.Width, 5 + 50);
+
+            this.m_ball = new Ball(new Vector2(this.Width / 2, this.Height / 2), 10);
         }
     }
 }

@@ -63,5 +63,19 @@ namespace OpenTKPong.Collisions {
             this.Vertices[2] = new Vector2(Origin.X + this.Width, Origin.Y + this.Height);
             this.Vertices[3] = new Vector2(Origin.X, Origin.Y + this.Height);
         }
+
+        /// <summary>
+        /// Returns true if the point lies on or inside the rectangle
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public bool PointInsideRect(Vector2 p) {
+            return
+                p.X >= this.Origin.X &&
+                p.X <= this.Origin.X + this.Width &&
+                p.Y <= this.Origin.Y &&
+                p.Y >= this.Origin.Y - this.Height;
+ 
+        }
     }
 }

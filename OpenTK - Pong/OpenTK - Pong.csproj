@@ -56,7 +56,9 @@
   <ItemGroup>
     <Compile Include="Collisions\Collidable.cs" />
     <Compile Include="Collisions\CollidableAABB.cs" />
+    <Compile Include="Collisions\CollidableCircle.cs" />
     <Compile Include="Collisions\ICollidable.cs" />
+    <Compile Include="Collisions\IPolygon.cs" />
     <Compile Include="Collisions\Projection.cs" />
     <Compile Include="Entities\Ball.cs" />
     <Compile Include="Entities\Paddle.cs" />

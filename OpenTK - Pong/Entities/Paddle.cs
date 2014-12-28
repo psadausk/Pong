@@ -41,7 +41,6 @@ namespace OpenTKPong.Entities {
 
         public void UpdatePosition(int velocity) {
             this.Origin = new Vector2(Origin.X, (float)(Origin.Y + velocity * this.velocity));
-            this.ReCalcVertices();
         }
     }
 }

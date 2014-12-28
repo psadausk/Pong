@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace OpenTKPong.Collisions {
-    public abstract class Collidable : ICollidable {
+    public abstract class Collidable : IPolygon {
 
         public virtual Vector2[] Vertices { get; set; }
 
@@ -19,25 +19,29 @@ namespace OpenTKPong.Collisions {
 
 
         public virtual bool Collided(ICollidable other) {
-            var axes = this.GetAxes();
-            var otherAxes = other.GetAxes();
-            var unionAxes = axes.Union(otherAxes, new Vector2Comparator()).Distinct(new Vector2Comparator());
 
-            for ( var index = 0; index < axes.Length; index++ ) {
-                var p1 = this.ProjectShapeOnToAxes(axes[index]);
-                var p2 = other.ProjectShapeOnToAxes(axes[index]);
+            if (other is IPolygon) {
+                var otherP = other as IPolygon;
+                var axes = this.GetAxes();
+                var otherAxes = otherP.GetAxes();
+                var unionAxes = axes.Union(otherAxes, new Vector2Comparator()).Distinct(new Vector2Comparator());
 
-                if ( !p1.Intersects(p2) ) {
-                    return true;
+                for (var index = 0; index < axes.Length; index++) {
+                    var p1 = this.ProjectShapeOnToAxes(axes[index]);
+                    var p2 = otherP.ProjectShapeOnToAxes(axes[index]);
+
+                    if (!p1.Intersects(p2)) {
+                        return true;
+                    }
                 }
-            }
 
-            for ( var index = 0; index < otherAxes.Length; index++ ) {
-                var p1 = this.ProjectShapeOnToAxes(axes[index]);
-                var p2 = other.ProjectShapeOnToAxes(axes[index]);
+                for (var index = 0; index < otherAxes.Length; index++) {
+                    var p1 = this.ProjectShapeOnToAxes(axes[index]);
+                    var p2 = otherP.ProjectShapeOnToAxes(axes[index]);
 
-                if ( !p1.Intersects(p2) ) {
-                    return true;
+                    if (!p1.Intersects(p2)) {
+                        return true;
+                    }
                 }
             }
             return false;
