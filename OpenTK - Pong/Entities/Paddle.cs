@@ -12,7 +12,7 @@ using OpenTKPong.Collisions;
 
 namespace OpenTKPong.Entities {
 
-    public class Paddle : CollidableAABB, IDrawable {
+    public class Paddle : CollidableAABB {
         //Refers to the top left coordinates of the paddle
 
         private float velocity = 10;

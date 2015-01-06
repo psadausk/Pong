@@ -19,18 +19,4 @@ namespace OpenTKPong {
             }
         }
     }
-
-    /// <summary>
-    /// All drawable objects (including the ball) are handled as quads.
-    /// Tto make collision dectection easy
-    /// </summary>
-    public interface IDrawable {
-        /// <summary>
-        /// The TopLeft corner of the object
-        /// </summary>        
-
-        void Render();
-        //void Collision(IDrawable other);
-        //void Scale(float width, float height);
-    }
 }

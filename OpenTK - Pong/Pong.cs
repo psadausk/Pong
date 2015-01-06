@@ -9,6 +9,11 @@ using OpenTK.Input;
 using Tao.OpenGl;
 using OpenTKPong.Entities;
 using System.Drawing;
+using OpenTK.Audio;
+using System.IO;
+using System.Diagnostics;
+using System.Threading;
+using System.ComponentModel;
 
 namespace OpenTKPong {
 
@@ -37,11 +42,24 @@ namespace OpenTKPong {
 
         private Vector3 m_upVector = Vector3.UnitY;
 
+        private Dictionary<string, AudioTask> m_runningAudioTasks;
+
+        private long  m_reset_delay = 500;
+        private Stopwatch m_stopWatch;
+
+        private AudioTask m_bgm = new AudioTask("Assets/Sound/MainTheme.wav");
+
+
         public Pong()
             : base(800, 600) {
             this.m_cameraMatrix = Matrix4.Identity;
+            this.m_runningAudioTasks = new Dictionary<string, AudioTask>();
+            this.m_stopWatch = new Stopwatch();
+            this.m_stopWatch.Start();
             this.Reset();
+
             Glu.gluOrtho2D(0.0f, (double)this.Width, 0.0, (double)this.Height);
+            
         }
 
         protected override void OnResize(EventArgs e) {
@@ -57,7 +75,7 @@ namespace OpenTKPong {
             GL.LoadMatrix(ref this.m_cameraMatrix);
             this.RenderObjects();
             this.SwapBuffers();
-        }        
+        }
         private void RenderObjects() {
 
             GL.MatrixMode(MatrixMode.Modelview);
@@ -76,7 +94,7 @@ namespace OpenTKPong {
             } else if ( this.m_leftPaddle.Collided(this.m_bottomWall) ) {
                 this.m_leftPaddle.Origin = new Vector2(this.m_leftPaddle.Origin.X, this.m_bottomWall.Origin.Y + this.m_paddleHeight);
             }
-            
+
             //Right Paddle
             if ( this.m_rightPaddle.Collided(this.m_topWall) ) {
                 this.m_rightPaddle.Origin = new Vector2(this.m_rightPaddle.Origin.X, this.m_topWall.Origin.Y - this.m_topWall.Height);
@@ -85,14 +103,13 @@ namespace OpenTKPong {
             }
 
             //Ball
-            if (this.m_ball.Collided(this.m_topWall)) {
+            if ( this.m_ball.Collided(this.m_topWall) ) {
                 this.m_ball.UpdatePosition(new Vector2(1, -1.1f));
-            }
-            else if (this.m_ball.Collided(this.m_bottomWall)) {
+            } else if ( this.m_ball.Collided(this.m_bottomWall) ) {
                 this.m_ball.UpdatePosition(new Vector2(1, -1.1f));
-            } else if (this.m_ball.Collided(this.m_leftPaddle)) {
+            } else if ( this.m_ball.Collided(this.m_leftPaddle) ) {
                 this.m_ball.UpdatePosition(new Vector2(-1.1f, 1));
-            } else if (this.m_ball.Collided(this.m_rightPaddle)) {
+            } else if ( this.m_ball.Collided(this.m_rightPaddle) ) {
                 this.m_ball.UpdatePosition(new Vector2(-1.1f, 1));
             }
 
@@ -117,14 +134,18 @@ namespace OpenTKPong {
                 this.m_rightPaddle.UpdatePosition(-1);
             }
 
-            if (Keyboard[Key.R]) {
-                this.Reset();
+            if ( Keyboard[Key.R] ) {
+                if ( this.m_stopWatch.ElapsedMilliseconds > this.m_reset_delay ) {
+                    this.Reset();
+                    this.m_stopWatch.Reset();
+                    this.m_stopWatch.Start();
+                }
             }
         }
 
         private void UpdateBall() {
             //Maintain velocity
-            this.m_ball.UpdatePosition(new Vector2(1, 1) );
+            this.m_ball.UpdatePosition(new Vector2(1, 1));
         }
 
         protected override void OnLoad(EventArgs e) {
@@ -151,6 +172,24 @@ namespace OpenTKPong {
             this.m_bottomWall = new Wall(new Vector2(0, 5), this.Width, 5 + 50);
 
             this.m_ball = new Ball(new Vector2(this.Width / 2, this.Height / 2), 10);
+
+            //this.LoadBGM();
         }
+
+        private void LoadBGM() {
+            //First clear running background music
+            this.m_bgm.StopLoop();
+            Thread.Sleep(150);
+            this.m_bgm.Start();
+            //var nbgw = new BackgroundWorker();
+
+            //nbgw.DoWork += ( (s, e) => at.Start() );
+            //nbgw.RunWorkerCompleted += ((s,e) => at.Stop());
+
+            //nbgw.RunWorkerAsync();
+
+            //this.m_runningAudioTasks["bgm"] = at;
+
+        }     
     }
 }

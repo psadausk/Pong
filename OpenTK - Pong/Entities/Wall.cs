@@ -12,7 +12,7 @@ using System.Drawing;
 using OpenTKPong.Collisions;
 
 namespace OpenTKPong.Entities {
-    public class Wall : CollidableAABB, IDrawable {
+    public class Wall : CollidableAABB {
         public Wall(Vector2 origin, float width, float height) : base(origin, width, height) {
         }
 
