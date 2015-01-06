@@ -42,18 +42,16 @@ namespace OpenTKPong {
 
         private Vector3 m_upVector = Vector3.UnitY;
 
-        private Dictionary<string, AudioTask> m_runningAudioTasks;
+        private AudioManager m_am = new AudioManager();
 
         private long  m_reset_delay = 500;
         private Stopwatch m_stopWatch;
-
-        private AudioTask m_bgm = new AudioTask("Assets/Sound/MainTheme.wav");
 
 
         public Pong()
             : base(800, 600) {
             this.m_cameraMatrix = Matrix4.Identity;
-            this.m_runningAudioTasks = new Dictionary<string, AudioTask>();
+
             this.m_stopWatch = new Stopwatch();
             this.m_stopWatch.Start();
             this.Reset();
@@ -105,12 +103,16 @@ namespace OpenTKPong {
             //Ball
             if ( this.m_ball.Collided(this.m_topWall) ) {
                 this.m_ball.UpdatePosition(new Vector2(1, -1.1f));
+                this.m_am.PlaySound(SoundEnums.Boop_1, false);
             } else if ( this.m_ball.Collided(this.m_bottomWall) ) {
                 this.m_ball.UpdatePosition(new Vector2(1, -1.1f));
+                this.m_am.PlaySound(SoundEnums.Boop_1, false);
             } else if ( this.m_ball.Collided(this.m_leftPaddle) ) {
                 this.m_ball.UpdatePosition(new Vector2(-1.1f, 1));
+                this.m_am.PlaySound(SoundEnums.Boop_1, false);
             } else if ( this.m_ball.Collided(this.m_rightPaddle) ) {
                 this.m_ball.UpdatePosition(new Vector2(-1.1f, 1));
+                this.m_am.PlaySound(SoundEnums.Boop_1, false);
             }
 
         }
@@ -173,14 +175,14 @@ namespace OpenTKPong {
 
             this.m_ball = new Ball(new Vector2(this.Width / 2, this.Height / 2), 10);
 
-            //this.LoadBGM();
+            this.LoadBGM();
         }
 
         private void LoadBGM() {
             //First clear running background music
-            this.m_bgm.StopLoop();
-            Thread.Sleep(150);
-            this.m_bgm.Start();
+            this.m_am.KillSounds();
+            Thread.Sleep(250);
+            this.m_am.PlaySound(SoundEnums.Bgm, true);
             //var nbgw = new BackgroundWorker();
 
             //nbgw.DoWork += ( (s, e) => at.Start() );

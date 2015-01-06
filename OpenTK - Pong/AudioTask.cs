@@ -16,52 +16,61 @@ namespace OpenTKPong {
         public int Buffer { get; set; }
         public int Source { get; set; }
 
-        private bool m_loop;
+        private bool m_stop;
+        private bool m_looping;
+        private bool m_shouldLoop;
         private string m_path;
 
         private BackgroundWorker m_bgw;
 
-        public AudioTask(string path) {
-            this.Context = new AudioContext();
-            
+        public AudioTask(string path, int buffer, int source) {
+            this.Buffer = buffer;
+            this.Source = source;            
             int state;
             this.m_path = path;
-        }
 
-
-        public void Start() {
             int channels, bits_per_sample, sample_rate;
-            this.Buffer = AL.GenBuffer();
-            this.Source = AL.GenSource();
 
             byte[] sound_data = LoadWave(File.Open(this.m_path, FileMode.Open), out channels, out bits_per_sample, out sample_rate);
 
             AL.BufferData(this.Buffer, GetSoundFormat(channels, bits_per_sample), sound_data, sound_data.Length, sample_rate);
+            AL.SourceQueueBuffer(this.Source, this.Buffer);
+        }
+
+
+        public void Start(bool loop) {
+            this.m_shouldLoop = loop;
 
             this.m_bgw = new BackgroundWorker();
             this.m_bgw.DoWork += ( (s, e) => this.Play() );
-            this.m_bgw.RunWorkerCompleted += ( (s, e) => this.Stop() );
-            this.m_loop = true;
+            this.m_bgw.RunWorkerCompleted += ( (s, e) => this.Stop() );            
             this.m_bgw.RunWorkerAsync();
         }
 
-        public void Play() {
-            AL.SourceQueueBuffer(this.Source, this.Buffer);
-            AL.Source(this.Source, ALSourceb.Looping, true);
+        //TODO: Looping and non looping should be handled the same, rather than two seperate loops
+        public void Play() {           
+            AL.Source(this.Source, ALSourceb.Looping, this.m_shouldLoop);
             AL.SourcePlay(this.Source);
-            while ( this.m_loop ) {
-                Thread.Sleep(100);
+            int state;
+            if ( this.m_shouldLoop ) {
+                this.m_looping = true;
+                do {
+                    Thread.Sleep(100);
+                } while ( this.m_looping == true );
+            } else {
+                do {
+                    Thread.Sleep(10);
+                    AL.GetSource(this.Source, ALGetSourcei.SourceState, out state);
+                } while ( (ALSourceState)state == ALSourceState.Playing );
             }
         }
 
         public void StopLoop() {
-            this.m_loop = false;
+            this.m_looping = false;
         }
 
         public void Stop() {
-            AL.SourceStop(this.Source);
-            AL.DeleteSource(this.Source);
-            AL.DeleteBuffer(this.Buffer);
+            AL.SourceRewind(this.Source);            
         }
 
 
@@ -102,9 +111,9 @@ namespace OpenTKPong {
                 int block_align = reader.ReadInt16();
                 int bits_per_sample = reader.ReadInt16();
 
-                string data_signature = new string(reader.ReadChars(4));
-                if ( data_signature != "data" )
-                    throw new NotSupportedException("Specified wave file is not supported.");
+                //string data_signature = new string(reader.ReadChars(4));
+                //if ( data_signature != "data" )
+                //    throw new NotSupportedException("Specified wave file is not supported.");
 
                 int data_chunk_size = reader.ReadInt32();
 
