@@ -9,10 +9,12 @@ namespace OpenTKPong.Collisions {
     public class CollidableCircle : ICollidable {
 
         public Vector2 Origin { get; set; }
+        public Vector2 OriginalOrigin { get; set; }
         public float Raduis { get; set; }
 
         public CollidableCircle(Vector2 origin, float raduis) {
             this.Origin = origin;
+            this.OriginalOrigin = origin;
             this.Raduis = raduis;
         }
 

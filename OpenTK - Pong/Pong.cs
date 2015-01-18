@@ -39,6 +39,10 @@ namespace OpenTKPong {
         private Ball m_ball;
         private Wall m_topWall;
         private Wall m_bottomWall;
+        private TextWriter m_leftScore;
+        private TextWriter m_rightScore;
+        private int m_leftScoreCounter = 0;
+        private int m_rightScoreCounter = 0;
 
         private Vector3 m_upVector = Vector3.UnitY;
 
@@ -49,28 +53,46 @@ namespace OpenTKPong {
 
 
         public Pong()
+            //: base(1680, 1050) {
             : base(800, 600) {
             this.m_cameraMatrix = Matrix4.Identity;
+            this.m_leftScore = new TextWriter(new Vector2(this.Width / 2 - 50, 0), 100, 100, TextureUnit.Texture0);
+            this.m_rightScore = new TextWriter(new Vector2(this.Width / 2 + 50, 0), 100, 100, TextureUnit.Texture1);
 
+            
+            this.m_leftScore.UpdateText(this.m_leftScoreCounter.ToString());
+            this.m_rightScore.UpdateText(this.m_rightScoreCounter.ToString());
             this.m_stopWatch = new Stopwatch();
             this.m_stopWatch.Start();
             this.Reset();
 
-            Glu.gluOrtho2D(0.0f, (double)this.Width, 0.0, (double)this.Height);
+            //Glu.gluOrtho2D(0.0f, (double)this.Width, 0.0, (double)this.Height);
+
             
         }
 
         protected override void OnResize(EventArgs e) {
-            GL.Viewport(0, 0, Width, Height);
-            GL.MatrixMode(MatrixMode.Projection);
+            GL.PushMatrix();
             GL.LoadIdentity();
-            Glu.gluOrtho2D(0.0, (double)Width, 0.0, (double)Height);
+
+            Matrix4 ortho_projection = Matrix4.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, -1, 1);
+            GL.MatrixMode(MatrixMode.Projection);
+
+            GL.PushMatrix();//
+            GL.LoadMatrix(ref ortho_projection);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e) {
-            GL.MatrixMode(MatrixMode.Modelview);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.LoadMatrix(ref this.m_cameraMatrix);
+
+            GL.PushMatrix();
+            GL.LoadIdentity();
+
+            Matrix4 ortho_projection = Matrix4.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, -1, 1);
+            GL.MatrixMode(MatrixMode.Projection);
+
+            GL.PushMatrix();//
+            GL.LoadMatrix(ref ortho_projection);
             this.RenderObjects();
             this.SwapBuffers();
         }
@@ -80,9 +102,14 @@ namespace OpenTKPong {
             GL.LoadIdentity();
             this.m_leftPaddle.Render();
             this.m_rightPaddle.Render();
-            this.m_topWall.Render();
-            this.m_bottomWall.Render();
             this.m_ball.Render();
+            
+            this.m_leftScore.Draw();
+            this.m_rightScore.Draw();
+            this.m_topWall.Render();
+            this.m_bottomWall.Render();            
+            
+            //this.m_textWriter.UpdateText
         }
 
         private void DetectCollisions() {
@@ -117,23 +144,36 @@ namespace OpenTKPong {
 
         }
 
+        private void DetectScore() {
+            if ( this.m_ball.Origin.X < -1 * this.m_ball.Raduis ) {
+                this.m_leftScoreCounter++;
+                this.m_leftScore.UpdateText(this.m_leftScoreCounter.ToString());
+                this.m_ball.Reset();
+            } else if ( this.m_ball.Origin.X > this.Width + this.m_ball.Raduis ) {
+                this.m_rightScoreCounter++;
+                this.m_rightScore.UpdateText(this.m_rightScoreCounter.ToString());
+                this.m_ball.Reset();
+            }
+        }
+
         protected override void OnUpdateFrame(FrameEventArgs e) {
             this.UpdateKeyboardEvents();
             this.UpdateBall();
+            this.DetectScore();
             this.DetectCollisions();
         }
 
         private void UpdateKeyboardEvents() {
             if ( Keyboard[Key.W] ) {
-                this.m_leftPaddle.UpdatePosition(1);
-            } else if ( Keyboard[Key.S] ) {
                 this.m_leftPaddle.UpdatePosition(-1);
+            } else if ( Keyboard[Key.S] ) {
+                this.m_leftPaddle.UpdatePosition(1);
             }
 
             if ( Keyboard[Key.Up] ) {
-                this.m_rightPaddle.UpdatePosition(1);
-            } else if ( Keyboard[Key.Down] ) {
                 this.m_rightPaddle.UpdatePosition(-1);
+            } else if ( Keyboard[Key.Down] ) {
+                this.m_rightPaddle.UpdatePosition(1);
             }
 
             if ( Keyboard[Key.R] ) {
@@ -142,6 +182,10 @@ namespace OpenTKPong {
                     this.m_stopWatch.Reset();
                     this.m_stopWatch.Start();
                 }
+            }
+
+            if ( Keyboard[Key.Q] || Keyboard[Key.Escape] ) {
+                this.Exit();
             }
         }
 
@@ -167,7 +211,7 @@ namespace OpenTKPong {
                     this.m_paddleWidth, this.m_paddleHeight);
             this.m_rightPaddle = new Paddle(
                 new Vector2(
-                    this.Width - this.m_paddleWidth,
+                    this.Width - this.m_paddleWidth- this.m_paddleOffset,
                     this.Height / 2 + this.m_paddleHeight / 2), this.m_paddleWidth, this.m_paddleHeight);
 
             this.m_topWall = new Wall(new Vector2(0, this.Height + 50), this.Width, 5 + 50);
@@ -175,7 +219,7 @@ namespace OpenTKPong {
 
             this.m_ball = new Ball(new Vector2(this.Width / 2, this.Height / 2), 10);
 
-            this.LoadBGM();
+            //this.LoadBGM();
         }
 
         private void LoadBGM() {

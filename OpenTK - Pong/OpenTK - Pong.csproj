@@ -64,11 +64,14 @@
     <Compile Include="Collisions\Projection.cs" />
     <Compile Include="Entities\Ball.cs" />
     <Compile Include="Entities\Paddle.cs" />
+    <Compile Include="Entities\Particle.cs" />
+    <Compile Include="Entities\ParticleManager.cs" />
     <Compile Include="Entities\Wall.cs" />
     <Compile Include="Pong.cs" />
     <Compile Include="PongGame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SoundEnums.cs" />
+    <Compile Include="TextWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
